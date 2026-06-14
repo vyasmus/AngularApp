@@ -1,0 +1,31 @@
+.book-container {
+  padding: 20px;
+}
+.query-list {
+  margin-right: 20px;
+  float: left;
+}
+
+.result-list {
+  margin-left: 20px;
+  float: left;
+  width: 65%
+}
+.book-name {
+  font-weight: bold;
+  float: left;
+  width: 300px;
+}
+.book-page-count {
+  color: #666;
+  float: left;
+}
+.author-name {
+  font-weight: bold;
+  float: left;
+  width: 300px;
+}
+.author-books {
+  color: #666;
+  float: left;
+}

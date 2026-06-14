@@ -1,0 +1,23 @@
+.home {
+  width: 50%;
+  align-content: center;
+}
+
+.usecase {
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  float: left;
+  background-color: #faaaaa;
+  border: 1px solid #ccc;
+}
+.usecase-image {
+  width: 100%;
+  height: 100%;
+  align: center;
+}
+
+.usecase-title {
+  text-align: center;
+  border-top: 1px solid #000000;
+}

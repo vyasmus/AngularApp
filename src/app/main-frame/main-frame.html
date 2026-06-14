@@ -1,0 +1,14 @@
+<div style="position: absolute; top: 0; left: 0; z-index: 1000;">
+<button matIconButton [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+  <mat-icon>menu</mat-icon>
+</button>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item><a routerLink="/graphqlbook">GraphQL</a></button>
+  <button mat-menu-item>Item 2</button>
+  <button mat-menu-item><a routerLink="/home">Home</a></button>
+</mat-menu>
+</div>
+<app-header></app-header>
+<router-outlet />
+
+

@@ -1,0 +1,35 @@
+<div class="book-container">
+  <div class="query-list">
+    <h1>Queries:</h1>
+    <button (click)="loadBooks()">Show All Books</button><br><br>
+    <button (click)="loadBookById(bookId.value)">Show Book By ID</button><input #bookId type="text" placeholder="Enter Book ID"><br><br>
+    <button (click)="loadAuthors()">List All Authors</button><br><br>
+    <button (click)="loadAuthorsById(authorId.value)">Show Author By ID</button><input #authorId type="text" placeholder="Enter Author ID"><br><br>
+    <br><br><br>
+    <button (click)="clearResults()">Clear Results</button>
+  </div>
+
+    <div class="result-list" >
+      <h1>Results:</h1>
+      @if(showresultsOf === "Books") {
+        <ul class="book-list">
+          @for (book of books; track book.id) {
+              <li><div class="book-name"> {{ book.id }} {{ book.name }} </div>
+                  <div class="book-page-count"> PageCount: #{{ book.pageCount }}</div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;<b>Author:</b> {{ book.author.id }} {{ book.author.firstName }} {{ book.author.lastName }} </div></li>
+            } @empty {
+              <li>No books found.</li>
+          }
+        </ul>
+      }
+      @if(showresultsOf === "Authers") {
+        <ul class="author-list">
+          @for (author of authors; track author.id) {
+              <li><div class="aut hor-name">{{ author.firstName }} {{ author.lastName }}</div> <div class="author-books"> ID: #{{ author.id }}</div></li>
+            } @empty {
+              <li>No authors found.</li>
+          }
+        </ul>
+      }
+  </div>
+</div>
