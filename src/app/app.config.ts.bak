@@ -7,7 +7,6 @@ import { provideApollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache } from '@apollo/client';
 import { environment } from '../environments/environment';
-import { provideStore } from '@ngrx/store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,14 +15,14 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(),
     provideApollo(() => {
-        const httpLink = inject(HttpLink);
-        return {
-            link: httpLink.create({
-                uri: environment.apiBooksUrl + '/graphql',
-            }),
-            cache: new InMemoryCache(),
-        };
+      const httpLink = inject(HttpLink);
+
+      return {
+        link: httpLink.create({
+          uri: environment.apiBooksUrl + '/graphql',
+        }),
+        cache: new InMemoryCache(),
+      };
     }),
-    provideStore()
-],
+  ],
 };

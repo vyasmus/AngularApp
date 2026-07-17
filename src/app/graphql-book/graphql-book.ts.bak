@@ -1,6 +1,8 @@
-import { Component, inject } from '@angular/core';
-import { GraphqlBooksService } from '../Services/graphql-books-service'
+import { Component } from '@angular/core';
+import { GraphqlBooks } from '../Services/graphql-books'
 import { Book, Author } from '../models/graphql/graphql';
+import { delay, of } from 'rxjs';
+
 
 @Component({
   selector: 'app-graphql-book',
@@ -10,22 +12,22 @@ import { Book, Author } from '../models/graphql/graphql';
 })
 export class GraphqlBook {
 
-  constructor(private graphqlBooksService: GraphqlBooksService) {}
+  constructor(private graphqlBooks: GraphqlBooks) {}
 
   books: Book[] = [];
   authors: Author[] = [];
 
   showresultsOf : String = "";
+  showBooks: boolean = false;
 
   // ngOnInit(): void {
-  //   this.graphqlBooksService.getBooks(this.books)
+  //   this.graphqlBooks.getBooks(this.books)
   // }
 
   loadBooks(): void {
 
     console.log('Loading books...');
-    this.graphqlBooksService.getBooks(this.books);
-    //this.books = this.graphqlBooksService.getBooksObservable();
+    this.graphqlBooks.getBooks(this.books);
     console.log("Books loaded", this.books);
     this.showresultsOf = "Books";
   }
@@ -33,21 +35,21 @@ export class GraphqlBook {
   loadBookById(id: string): void {
 
     console.log('Loading books...');
-    this.graphqlBooksService.bookById(id, this.books);
+    this.graphqlBooks.bookById(id, this.books);
     console.log("Books loaded", this.books);
     this.showresultsOf = "Books";
   }
 
   loadAuthorsById(id: string) {
     console.log('Loading books...');
-    this.graphqlBooksService.getAuthersById(id, this.authors);
+    this.graphqlBooks.getAuthersById(id, this.authors);
     console.log("Authers loaded", this.books);
     this.showresultsOf = "Authers";
   }
 
   loadAuthors() {
     console.log('Loading books...');
-    this.graphqlBooksService.getAuthers(this.authors);
+    this.graphqlBooks.getAuthers(this.authors);
     console.log("Authers loaded", this.authors);
     this.showresultsOf = "Authers";
   }

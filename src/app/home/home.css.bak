@@ -1,7 +1,6 @@
 .home {
-  display: flex;
-  width: 100%;
-  justify-content: center;
+  width: 50%;
+  align: center
 }
 
 .usecase {
