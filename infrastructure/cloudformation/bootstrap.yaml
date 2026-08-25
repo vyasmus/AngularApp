@@ -303,7 +303,7 @@ Resources:
       TimeoutInMinutes: 30
       Source:
         Type: CODEPIPELINE
-        BuildSpec: buildspec.yml
+        BuildSpec: ./buildspec.yml
       Artifacts:
         Type: CODEPIPELINE
       Environment:
