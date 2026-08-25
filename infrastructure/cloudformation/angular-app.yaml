@@ -26,6 +26,21 @@ Parameters:
     Default: PriceClass_100
     AllowedValues: [PriceClass_100, PriceClass_200, PriceClass_All]
 
+  GitHubConnectionArn:
+    Type: String
+    Default: arn:aws:codeconnections:us-east-1:063378366502:connection/d4427e74-68c5-434a-9852-ceefc9ed1ebc
+    Description: Existing AWS CodeConnections GitHub connection ARN.
+
+  GitHubRepository:
+    Type: String
+    Default: vyasmus/AngularApp
+    AllowedPattern: '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$'
+
+  GitHubBranch:
+    Type: String
+    Default: main
+
+
 Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
