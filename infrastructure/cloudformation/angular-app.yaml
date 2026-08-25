@@ -1,0 +1,515 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: >
+  AWS infrastructure for AngularApp CI/CD deployment.
+  Creates S3 hosting bucket, CloudFront distribution,
+  CodeBuild project, CodePipeline and IAM roles.
+
+Parameters:
+
+  GitHubConnectionArn:
+    Type: String
+    Description: >
+      ARN of the AWS CodeConnections connection to GitHub.
+
+  GitHubRepository:
+    Type: String
+    Default: vyasmus/AngularApp
+
+  GitHubBranch:
+    Type: String
+    Default: main
+
+  ApplicationName:
+    Type: String
+    Default: angular-app
+
+Resources:
+
+  # ---------------------------------------------------------
+  # S3 Deployment Bucket
+  # ---------------------------------------------------------
+
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+      VersioningConfiguration:
+        Status: Enabled
+
+      Tags:
+        - Key: Application
+          Value: !Ref ApplicationName
+
+  # ---------------------------------------------------------
+  # CloudFront Origin Access Control
+  # ---------------------------------------------------------
+
+  CloudFrontOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${ApplicationName}-oac"
+        Description: CloudFront access to private S3 bucket
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # ---------------------------------------------------------
+  # CloudFront Distribution
+  # ---------------------------------------------------------
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+
+        Enabled: true
+
+        Comment: !Sub "${ApplicationName} Angular Application"
+
+        DefaultRootObject: index.html
+
+        HttpVersion: http2and3
+
+        PriceClass: PriceClass_100
+
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt WebsiteBucket.RegionalDomainName
+
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+
+            OriginAccessControlId:
+              !GetAtt CloudFrontOriginAccessControl.Id
+
+        DefaultCacheBehavior:
+
+          TargetOriginId: S3Origin
+
+          ViewerProtocolPolicy: redirect-to-https
+
+          Compress: true
+
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+
+          CachedMethods:
+            - GET
+            - HEAD
+
+          ForwardedValues:
+            QueryString: true
+
+        CustomErrorResponses:
+
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 0
+
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 0
+
+      Tags:
+        - Key: Application
+          Value: !Ref ApplicationName
+
+  # ---------------------------------------------------------
+  # S3 Bucket Policy
+  # ---------------------------------------------------------
+
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebsiteBucket
+
+      PolicyDocument:
+        Version: "2012-10-17"
+
+        Statement:
+
+          - Sid: AllowCloudFrontRead
+
+            Effect: Allow
+
+            Principal:
+              Service: cloudfront.amazonaws.com
+
+            Action:
+              - s3:GetObject
+
+            Resource:
+              !Sub "${WebsiteBucket.Arn}/*"
+
+            Condition:
+              StringEquals:
+                AWS:SourceArn:
+                  !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+
+  # ---------------------------------------------------------
+  # CodeBuild IAM Role
+  # ---------------------------------------------------------
+
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+
+    Properties:
+
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+
+        Statement:
+          - Effect: Allow
+
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+
+            Action:
+              - sts:AssumeRole
+
+      Policies:
+
+        - PolicyName: AngularAppCodeBuildPolicy
+
+          PolicyDocument:
+
+            Version: "2012-10-17"
+
+            Statement:
+
+              - Effect: Allow
+
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+
+                Resource: "*"
+
+              - Effect: Allow
+
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                  - s3:DeleteObject
+                  - s3:ListBucket
+
+                Resource:
+                  - !GetAtt WebsiteBucket.Arn
+                  - !Sub "${WebsiteBucket.Arn}/*"
+
+              - Effect: Allow
+
+                Action:
+                  - cloudfront:CreateInvalidation
+
+                Resource:
+                  !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+
+  # ---------------------------------------------------------
+  # CodeBuild Project
+  # ---------------------------------------------------------
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+
+    Properties:
+
+      Name:
+        !Sub "${ApplicationName}-build"
+
+      ServiceRole:
+        !GetAtt CodeBuildRole.Arn
+
+      Artifacts:
+        Type: CODEPIPELINE
+
+      Source:
+        Type: CODEPIPELINE
+
+      Environment:
+
+        ComputeType: BUILD_GENERAL1_SMALL
+
+        Image: aws/codebuild/standard:7.0
+
+        Type: LINUX_CONTAINER
+
+        PrivilegedMode: false
+
+        EnvironmentVariables:
+
+          - Name: S3_BUCKET
+            Value:
+              !Ref WebsiteBucket
+
+          - Name: CLOUDFRONT_DISTRIBUTION_ID
+            Value:
+              !Ref CloudFrontDistribution
+
+      Cache:
+        Type: NO_CACHE
+
+  # ---------------------------------------------------------
+  # CodePipeline IAM Role
+  # ---------------------------------------------------------
+
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+
+    Properties:
+
+      AssumeRolePolicyDocument:
+
+        Version: "2012-10-17"
+
+        Statement:
+
+          - Effect: Allow
+
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+
+            Action:
+              - sts:AssumeRole
+
+      Policies:
+
+        - PolicyName: AngularAppCodePipelinePolicy
+
+          PolicyDocument:
+
+            Version: "2012-10-17"
+
+            Statement:
+
+              - Effect: Allow
+
+                Action:
+                  - codeconnections:UseConnection
+
+                Resource:
+                  !Ref GitHubConnectionArn
+
+              - Effect: Allow
+
+                Action:
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+
+                Resource:
+                  !GetAtt CodeBuildProject.Arn
+
+              - Effect: Allow
+
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                  - s3:GetBucketVersioning
+                  - s3:GetBucketLocation
+
+                Resource:
+                  - !GetAtt WebsiteBucket.Arn
+                  - !Sub "${WebsiteBucket.Arn}/*"
+
+  # ---------------------------------------------------------
+  # CodePipeline Artifact Bucket
+  # ---------------------------------------------------------
+
+  PipelineArtifactBucket:
+    Type: AWS::S3::Bucket
+
+    Properties:
+
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+      VersioningConfiguration:
+        Status: Enabled
+
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # ---------------------------------------------------------
+  # CodePipeline
+  # ---------------------------------------------------------
+
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+
+    Properties:
+
+      Name:
+        !Sub "${ApplicationName}-pipeline"
+
+      RoleArn:
+        !GetAtt CodePipelineRole.Arn
+
+      ArtifactStore:
+
+        Type: S3
+
+        Location:
+          !Ref PipelineArtifactBucket
+
+      Stages:
+
+        # ------------------------------
+        # SOURCE
+        # ------------------------------
+
+        - Name: Source
+
+          Actions:
+
+            - Name: GitHub
+
+              ActionTypeId:
+
+                Category: Source
+
+                Owner: AWS
+
+                Provider: CodeStarSourceConnection
+
+                Version: "1"
+
+              Configuration:
+
+                ConnectionArn:
+                  !Ref GitHubConnectionArn
+
+                FullRepositoryId:
+                  !Ref GitHubRepository
+
+                BranchName:
+                  !Ref GitHubBranch
+
+                OutputArtifactFormat: CODE_ZIP
+
+              OutputArtifacts:
+                - Name: SourceArtifact
+
+              RunOrder: 1
+
+        # ------------------------------
+        # BUILD
+        # ------------------------------
+
+        - Name: Build
+
+          Actions:
+
+            - Name: AngularBuild
+
+              ActionTypeId:
+
+                Category: Build
+
+                Owner: AWS
+
+                Provider: CodeBuild
+
+                Version: "1"
+
+              Configuration:
+
+                ProjectName:
+                  !Ref CodeBuildProject
+
+              InputArtifacts:
+                - Name: SourceArtifact
+
+              OutputArtifacts:
+                - Name: BuildArtifact
+
+              RunOrder: 1
+
+        # ------------------------------
+        # DEPLOY
+        # ------------------------------
+
+        - Name: Deploy
+
+          Actions:
+
+            - Name: DeployToS3
+
+              ActionTypeId:
+
+                Category: Deploy
+
+                Owner: AWS
+
+                Provider: S3
+
+                Version: "1"
+
+              Configuration:
+
+                BucketName:
+                  !Ref WebsiteBucket
+
+                Extract: true
+
+              InputArtifacts:
+                - Name: BuildArtifact
+
+              RunOrder: 1
+  # ---------------------------------------------------------
+  # Outputs
+  # ---------------------------------------------------------
+
+Outputs:
+
+  WebsiteBucketName:
+    Description: S3 bucket containing Angular application
+    Value:
+      !Ref WebsiteBucket
+
+  CloudFrontDistributionId:
+    Description: CloudFront distribution ID
+    Value:
+      !Ref CloudFrontDistribution
+
+  CloudFrontDomainName:
+    Description: CloudFront application URL
+    Value:
+      !GetAtt CloudFrontDistribution.DomainName
+
+  CodeBuildProjectName:
+    Description: CodeBuild project
+    Value:
+      !Ref CodeBuildProject
+
+  CodePipelineName:
+    Description: CodePipeline
+    Value:
+      !Ref CodePipeline
