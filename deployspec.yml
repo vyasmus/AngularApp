@@ -34,6 +34,8 @@ phases:
   build:
     commands:
       - echo "Deploying immutable Angular assets..."
+      - echo "Deploying Angular application to S3..."
+      - test -f index.html
       - |
         aws s3 sync . "s3://${WEBSITE_BUCKET}" \
           --delete \
