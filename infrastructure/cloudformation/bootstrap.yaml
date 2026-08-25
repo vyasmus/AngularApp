@@ -328,7 +328,8 @@ Resources:
       TimeoutInMinutes: 20
       Source:
         Type: CODEPIPELINE
-        BuildSpec: deployspec.yml
+        ##BuildSpec: deployspec.yml
+        BuildSpec: buildspec.yml
       Artifacts:
         Type: CODEPIPELINE
       Environment:
