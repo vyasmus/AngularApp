@@ -474,7 +474,10 @@ Resources:
                     "ApplicationName": "${ApplicationName}",
                     "EnvironmentName": "${EnvironmentName}",
                     "CloudFrontPriceClass": "${CloudFrontPriceClass}",
-                    "BucketName": "${WebsiteBucketName}"
+                    "BucketName": "${WebsiteBucketName}",
+                    "GitHubConnectionArn": "${GitHubConnectionArn}",
+                    "GitHubRepository": "${GitHubRepository}",
+                    "GitHubBranch": "${GitHubBranch}"
                   }
               InputArtifacts:
                 - Name: SourceArtifact
