@@ -45,20 +45,6 @@ Parameters:
     Description: Globally unique lowercase S3 bucket name for the PROD website.
     AllowedPattern: '^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$'
 
-  ApprovalTopic:
-    Type: AWS::SNS::Topic
-    Condition: ApprovalEnabled
-    Properties:
-      TopicName: !Sub '${ApplicationName}-${EnvironmentName}-approval'
-
-  ApprovalSubscription:
-    Type: AWS::SNS::Subscription
-    Condition: ApprovalEnabled
-    Properties:
-      TopicArn: !Ref ApprovalTopic
-      Protocol: email
-      Endpoint: !Ref ApprovalEmail
-
   ApprovalEmail:
     Type: String
     Default: 'vyamus@gmail.com'
