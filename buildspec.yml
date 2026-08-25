@@ -1,58 +1,28 @@
 version: 0.2
 
-env:
-  variables:
-    NODE_ENV: production
-
 phases:
-
   install:
     runtime-versions:
       nodejs: 22
-
     commands:
-      - echo "Node version:"
       - node --version
-
-      - echo "NPM version:"
       - npm --version
-
-      - echo "Installing dependencies..."
       - npm ci
 
   pre_build:
     commands:
-      - echo "Running Angular unit tests..."
-      - npm test -- --watch=false
+      - npm test -- --watch=false --no-progress
 
   build:
     commands:
-      - echo "Building Angular production application..."
       - npm run build -- --configuration production
-
-      - echo "Build output:"
-      - find dist -type f
-
-      - echo "Invalidating CloudFront cache..."
-
-      - aws cloudfront create-invalidation \
-          --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-          --paths "/*"
 
   post_build:
     commands:
-      - echo "Angular build completed successfully."
+      - echo "Angular build output:"
+      - find dist -maxdepth 3 -type f | sort | head -200
 
 artifacts:
-
-  base-directory: dist
-
+  base-directory: dist/AngularApp/browser
   files:
-    - "**/*"
-
-cache:
-
-  paths:
-    - "node_modules/**/*"
-
-
+    - '**/*'

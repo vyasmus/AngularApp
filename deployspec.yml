@@ -1,0 +1,62 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - set -euo pipefail
+      - aws --version
+
+  pre_build:
+    commands:
+      - echo "Discovering runtime stack outputs..."
+      - |
+        STACK_JSON="$(aws cloudformation describe-stacks \
+          --stack-name "${RUNTIME_STACK_NAME}" \
+          --query 'Stacks[0].Outputs' \
+          --output json)"
+
+        export WEBSITE_BUCKET="$(echo "${STACK_JSON}" | python3 -c '
+        import json,sys
+        items=json.load(sys.stdin)
+        print(next(x["OutputValue"] for x in items if x["OutputKey"]=="WebsiteBucketName"))')"
+
+        export CLOUDFRONT_DISTRIBUTION_ID="$(echo "${STACK_JSON}" | python3 -c '
+        import json,sys
+        items=json.load(sys.stdin)
+        print(next(x["OutputValue"] for x in items if x["OutputKey"]=="CloudFrontDistributionId"))')"
+
+        test -n "${WEBSITE_BUCKET}"
+        test -n "${CLOUDFRONT_DISTRIBUTION_ID}"
+
+        echo "Website bucket: ${WEBSITE_BUCKET}"
+        echo "CloudFront distribution: ${CLOUDFRONT_DISTRIBUTION_ID}"
+
+  build:
+    commands:
+      - echo "Deploying immutable Angular assets..."
+      - |
+        aws s3 sync . "s3://${WEBSITE_BUCKET}" \
+          --delete \
+          --cache-control "public,max-age=31536000,immutable"
+
+      - echo "Uploading index.html with no-cache headers..."
+      - |
+        aws s3 cp "s3://${WEBSITE_BUCKET}/index.html" \
+          "s3://${WEBSITE_BUCKET}/index.html" \
+          --metadata-directive REPLACE \
+          --content-type "text/html; charset=utf-8" \
+          --cache-control "no-cache,no-store,must-revalidate"
+
+      - echo "Invalidating CloudFront..."
+      - |
+        INVALIDATION_ID="$(aws cloudfront create-invalidation \
+          --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
+          --paths '/*' \
+          --query 'Invalidation.Id' \
+          --output text)"
+
+        echo "Created CloudFront invalidation: ${INVALIDATION_ID}"
+
+  post_build:
+    commands:
+      - echo "PROD deployment completed successfully."
