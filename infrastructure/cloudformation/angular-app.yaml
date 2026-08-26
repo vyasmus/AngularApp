@@ -100,7 +100,7 @@ Resources:
           EnableAcceptEncodingGzip: true
           Cookies:
             CookieBehavior: none
-          Headers:
+          HeadersConfig:
             HeaderBehavior: none
           QueryStringsConfig:
             QueryStringBehavior: includeAll
@@ -117,9 +117,9 @@ Resources:
         ParametersInCacheKeyAndForwardedToOrigin:
           EnableAcceptEncodingBrotli: true
           EnableAcceptEncodingGzip: true
-          Cookies:
+          CookiesConfig:
             CookieBehavior: none
-          Headers:
+          HeadersConfig:
             HeaderBehavior: none
           QueryStringsConfig:
             QueryStringBehavior: none
