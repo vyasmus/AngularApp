@@ -102,8 +102,8 @@ Resources:
             CookieBehavior: none
           Headers:
             HeaderBehavior: none
-          QueryStrings:
-            QueryStringBehavior: all
+          QueryStringsConfig:
+            QueryStringBehavior: includeAll
 
   StaticAssetCachePolicy:
     Type: AWS::CloudFront::CachePolicy
@@ -121,7 +121,7 @@ Resources:
             CookieBehavior: none
           Headers:
             HeaderBehavior: none
-          QueryStrings:
+          QueryStringsConfig:
             QueryStringBehavior: none
 
   CloudFrontDistribution:

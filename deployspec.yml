@@ -18,12 +18,12 @@ phases:
         export WEBSITE_BUCKET="$(echo "${STACK_JSON}" | python3 -c '
         import json,sys
         items=json.load(sys.stdin)
-        print(next(x["OutputValue"] for x in items if x["OutputKey"]=="WebsiteBucketName"))')"
+        print(next(x["OutputValue"] for x in items if x["OutputKey"]=="WebsiteBucketName"))
 
         export CLOUDFRONT_DISTRIBUTION_ID="$(echo "${STACK_JSON}" | python3 -c '
         import json,sys
         items=json.load(sys.stdin)
-        print(next(x["OutputValue"] for x in items if x["OutputKey"]=="CloudFrontDistributionId"))')"
+        print(next(x["OutputValue"] for x in items if x["OutputKey"]=="CloudFrontDistributionId"))
 
         test -n "${WEBSITE_BUCKET}"
         test -n "${CLOUDFRONT_DISTRIBUTION_ID}"
