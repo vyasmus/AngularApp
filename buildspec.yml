@@ -7,13 +7,13 @@ env:
 phases:
 
   install:
+    runtime-versions:
+      nodejs: 22
     commands:
       - echo "Installing dependencies..."
-      - curl -sL https://nodesource.com | bash
-      - yum install -y nodejs
       - node --version
       - npm --version
-      - npm install -g @angular/cli@latest
+      - npm install
       - npm ci
 
   pre_build:
