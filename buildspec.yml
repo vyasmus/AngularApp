@@ -19,12 +19,12 @@ phases:
   pre_build:
     commands:
       - echo "Running Angular tests..."
-      - npm test -- --watch=false --no-progress
+      - npx ng test --watch=false --no-progress
 
   build:
     commands:
       - echo "Building Angular application..."
-      - npm run build -- --configuration production
+      - npx ng build --configuration production
 
   post_build:
     commands:
