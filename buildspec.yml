@@ -9,7 +9,7 @@ phases:
   install:
     commands:
       - echo "Installing dependencies..."
-      - curl -sL https://nodesource.com | bash -
+      - curl -sL https://nodesource.com | bash
       - yum install -y nodejs
       - node --version
       - npm --version
