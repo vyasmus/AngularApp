@@ -103,7 +103,7 @@ Resources:
           HeadersConfig:
             HeaderBehavior: none
           QueryStringsConfig:
-            QueryStringBehavior: includeAll
+            QueryStringBehavior: all
 
   StaticAssetCachePolicy:
     Type: AWS::CloudFront::CachePolicy
