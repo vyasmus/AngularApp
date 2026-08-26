@@ -11,7 +11,7 @@ phases:
       - echo "Installing dependencies..."
       - node --version
       - npm --version
-      - npm install -g @angular/cli --save-dev
+      - npm install -g @angular/cli@latest
       - npm ci
 
   pre_build:
