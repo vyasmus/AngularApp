@@ -27,7 +27,7 @@ phases:
     commands:
       - echo "Building Angular application..."
       - export NODE_OPTIONS="--max-old-space-size=4096"
-      - npm run build
+      - npm run build --verbose
 
   post_build:
     commands:
