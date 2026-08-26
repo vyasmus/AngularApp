@@ -98,7 +98,7 @@ Resources:
         ParametersInCacheKeyAndForwardedToOrigin:
           EnableAcceptEncodingBrotli: true
           EnableAcceptEncodingGzip: true
-          Cookies:
+          CookiesConfig:
             CookieBehavior: none
           HeadersConfig:
             HeaderBehavior: none
