@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ApolloTestingModule } from 'apollo-angular/testing';
 
 import { GraphqlBook } from './graphql-book';
 
@@ -8,7 +9,7 @@ describe('GraphqlBook', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GraphqlBook],
+      imports: [GraphqlBook, ApolloTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GraphqlBook);
