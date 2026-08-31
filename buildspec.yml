@@ -13,6 +13,8 @@ phases:
       - echo "AngularApp Build - Checking version  of node and NPM ..."
       - node --version
       - npm --version
+      - echo "Installing angular cli ..."
+      - npm install -g @angular/cli@latest @angular/build@latest
       - echo "AngularApp Build - Installing dependencies..."
       - npm ci --legacy-peer-deps
 
@@ -25,7 +27,7 @@ phases:
     commands:
       - echo "AngularApp Build - Building Angular application..."
       - export NODE_OPTIONS="--max-old-space-size=4096"
-      - npm run build --verbose --configuration=production
+      - npx ng build --verbose --configuration=production
 
   post_build:
     commands:
