@@ -8,7 +8,7 @@ phases:
 
   install:
     runtime-versions:
-      nodejs: 24
+      nodejs: 26
     commands:
       - echo "Installing Packages ..."
       - node --version
