@@ -21,7 +21,7 @@ phases:
   pre_build:
     commands:
       - echo "Running Angular tests..."
-      - npx ng test --report=verbose --watch=false --no-progress
+      - npx ng test --reporter=verbose --watch=false --no-progress
 
   build:
     commands:
