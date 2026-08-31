@@ -10,32 +10,32 @@ phases:
     runtime-versions:
       nodejs: 26
     commands:
-      - echo "Installing Packages ..."
+      - echo "AngularApp Build - Checking version  of node and NPM ..."
       - node --version
       - npm --version
       - echo "Installing angular cli ..."
       - npm install -g @angular/cli@latest
-      - echo "Installing dependencies..."
-      - npm ci
+      - echo "AngularApp Build - Installing dependencies..."
+      - npm ci --legacy-peer-deps
 
   pre_build:
     commands:
-      - echo "Running Angular tests..."
+      - echo "AngularApp Build - Running Angular tests..."
       ##- npx ng test --reporter=verbose --watch=false --no-progress
 
   build:
     commands:
-      - echo "Building Angular application..."
+      - echo "AngularApp Build - Building Angular application..."
       - export NODE_OPTIONS="--max-old-space-size=4096"
       - npx ng build --verbose --configuration=production
 
   post_build:
     commands:
-      - echo "Angular build output:"
+      - echo "AngularApp Build - Angular build output:"
       - find dist -maxdepth 4 -type f | sort
       - test -d dist/AngularApp/browser
       - test -f dist/AngularApp/browser/index.html
-      - echo "Angular browser artifact validated successfully."
+      - echo "AngularApp Build - Angular browser artifact validated successfully."
 
 artifacts:
   base-directory: dist/AngularApp/browser
