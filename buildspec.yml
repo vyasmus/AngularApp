@@ -13,8 +13,6 @@ phases:
       - echo "AngularApp Build - Checking version  of node and NPM ..."
       - node --version
       - npm --version
-      - echo "Installing angular cli ..."
-      - npm install -g @angular/cli@latest
       - echo "AngularApp Build - Installing dependencies..."
       - npm ci --legacy-peer-deps
 
