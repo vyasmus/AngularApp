@@ -21,13 +21,13 @@ phases:
   pre_build:
     commands:
       - echo "Running Angular tests..."
-      ##- npm test --watch=false --no-progress
+      - npx ng test --watch=false --no-progress
 
   build:
     commands:
       - echo "Building Angular application..."
       - export NODE_OPTIONS="--max-old-space-size=4096"
-      - npm run build --verbose
+      - npx ng build -- --configuration=production --verbose
 
   post_build:
     commands:
