@@ -1,0 +1,17 @@
+<div style="width: 100%; text-align: center;">Tensor Flow Examples</div>
+<div class="div-table">
+	<div class="div-cell"><button (click)="runSequentialModelPrediction()">Execute</button></div>
+  <div class="div-cell">
+	  Y = <input type="text" [value]="expression()" (input)="expression.set($any($event.target).value)" placeholder="Enter expression like 2*x-1" /><br/>
+	X Values: <input type="text" [value]="inputNumbersX().join(',')" (input)="setInputNumbersX($any($event.target).value)" placeholder="Enter comma-separated numbers like 1,2,3" /><br/>
+    <br/>
+    Output: {{ output() }}
+  </div>
+	<div class="div-cell">Row 2, Column 1</div>
+	<div class="div-cell">Row 2, Column 2</div>
+	<div class="div-cell">Row 3, Column 1</div>
+	<div class="div-cell">Row 3, Column 2</div>
+</div>
+
+
+
