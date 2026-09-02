@@ -14,6 +14,7 @@ phases:
       - node --version
       - npm --version
       - echo "Installing angular cli ..."
+      - npm install -g @angular/cli
       - npm install --include=dev
       - echo "AngularApp Build - Installing dependencies..."
       - npm ci --legacy-peer-deps
