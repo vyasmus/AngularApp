@@ -201,7 +201,7 @@ Resources:
             Resource: !Sub '${WebsiteBucket.Arn}/*'
             Condition:
               StringEquals:
-                AWS:SourceArn: !Sub >
+                aws:SourceArn: !Sub >
                   arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
           - Sid: DenyInsecureTransport
             Effect: Deny

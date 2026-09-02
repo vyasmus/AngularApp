@@ -67,6 +67,9 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -307,10 +310,11 @@ Resources:
                 Action:
                   - s3:ListBucket
                   - s3:GetBucketLocation
-                Resource: !Sub 'arn:${AWS::Partition}:s3:::${ApplicationName}-*'
+                Resource: !Sub 'arn:${AWS::Partition}:s3:::${WebsiteBucketName}'
               - Sid: WriteWebsiteObjects
                 Effect: Allow
                 Action:
+                  - s3:GetObject
                   - s3:PutObject
                   - s3:DeleteObject
                   - s3:AbortMultipartUpload
