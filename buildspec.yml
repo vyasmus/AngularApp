@@ -43,7 +43,7 @@ phases:
 artifacts:
   base-directory: dist/AngularApp/browser
   files:
-    - 'dist/AngularApp/browser/**/*'
+    - '**/*'
     - 'deployspec.yml'
   discard-paths: no
 
