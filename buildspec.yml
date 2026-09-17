@@ -41,10 +41,11 @@ phases:
       - echo "AngularApp Build - Angular browser artifact validated successfully."
 
 artifacts:
-  base-directory: dist/AngularApp/browser
+  #base-directory: dist/AngularApp/browser
+  base-directory: deploy
   files:
     - '**/*'
-    - 'deployspec.yml'
+
   discard-paths: no
 
 cache:
