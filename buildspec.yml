@@ -5,7 +5,6 @@ env:
     NODE_ENV: production
 
 phases:
-
   install:
     runtime-versions:
       nodejs: 26
@@ -50,3 +49,8 @@ artifacts:
 cache:
   paths:
     - node_modules/**/*
+
+  post_artifacts:
+    commands:
+      - echo "AngularApp Build - Post build phase started..."
+      - ls -la $CODEBUILD_SRC_DIR
