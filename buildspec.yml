@@ -36,8 +36,8 @@ phases:
     commands:
       - echo "AngularApp Build - Angular build output:"
       - find dist -maxdepth 4 -type f | sort
-      - test -d dist
-      - test -f dist/index.html
+      - test -d dist/AngularApp/browser
+      - test -f dist/AngularApp/browser/index.html
       - echo "AngularApp Build - Angular browser artifact validated successfully."
 
 artifacts:
