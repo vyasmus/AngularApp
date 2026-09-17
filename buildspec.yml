@@ -36,16 +36,15 @@ phases:
     commands:
       - echo "AngularApp Build - Angular build output:"
       - find dist -maxdepth 4 -type f | sort
-      - test -d dist/AngularApp/browser
-      - test -f dist/AngularApp/browser/index.html
+      - test -d dist
+      - test -f dist/index.html
       - echo "AngularApp Build - Angular browser artifact validated successfully."
 
 artifacts:
-  #base-directory: dist/AngularApp/browser
-  base-directory: deploy
+  base-directory: dist/AngularApp/browser
   files:
     - '**/*'
-
+    - 'deployspec.yml'
   discard-paths: no
 
 cache:
