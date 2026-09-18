@@ -13,8 +13,8 @@ Parameters:
 
   EnvironmentName:
     Type: String
-    Default: PROD
-    AllowedValues: [PROD]
+    Default: prod
+    AllowedValues: [prod]
 
   BucketName:
     Type: String
