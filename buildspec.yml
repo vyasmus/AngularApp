@@ -33,24 +33,34 @@ phases:
 
   post_build:
     commands:
-      - echo "AngularApp Build - Angular build output:"
-      - find dist -maxdepth 4 -type f | sort
-      - test -d dist/AngularApp/browser
-      - test -f dist/AngularApp/browser/index.html
-      - echo "AngularApp Build - Angular browser artifact validated successfully."
+      - echo "Preparing deployment files..."
+      - mkdir -p deploy
+      - cp -R dist/AngularApp/browser/* deploy/
+      - cp deployspec.yml deploy/
+      - echo "Deployment artifact:"
+      - find deploy -maxdepth 2 -type f
 
 artifacts:
-  base-directory: dist/AngularApp/browser
+  base-directory: deploy
   files:
     - '**/*'
-    - 'deployspec.yml'
   discard-paths: no
+
+  #ost_build:
+  #  commands:
+  #    - echo "AngularApp Build - Angular build output:"
+  #    - find dist -maxdepth 4 -type f | sort
+  #    - test -d dist/AngularApp/browser
+  #    - test -f dist/AngularApp/browser/index.html
+  #    - echo "AngularApp Build - Angular browser artifact validated successfully."
+
+#artifacts:
+#  base-directory: dist/AngularApp/browser
+#  files:
+#    - '**/*'
+#    - 'deployspec.yml'
+#  discard-paths: no
 
 cache:
   paths:
     - node_modules/**/*
-
-  post_artifacts:
-    commands:
-      - echo "AngularApp Build - Post build phase started..."
-      - ls -la $CODEBUILD_SRC_DIR
