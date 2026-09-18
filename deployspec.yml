@@ -1,6 +1,7 @@
 version: 0.2
 
 phases:
+
   install:
     commands:
       - set -eu
@@ -10,22 +11,17 @@ phases:
     commands:
       - echo "Discovering runtime stack outputs..."
       - |
-        STACK_JSON="$(aws cloudformation describe-stacks \
+        set -eu
+
+        WEBSITE_BUCKET="$(aws cloudformation describe-stacks \
           --stack-name "${RUNTIME_STACK_NAME}" \
-          --query 'Stacks[0].Outputs' \
-          --output json)"
+          --query "Stacks[0].Outputs[?OutputKey=='WebsiteBucketName'].OutputValue | [0]" \
+          --output text)"
 
-        export WEBSITE_BUCKET="$(echo "${STACK_JSON}" | python3 -c '
-        import json,sys
-        items=json.load(sys.stdin)
-        print(next(x["OutputValue"] for x in items if x["OutputKey"]=="WebsiteBucketName"))
-        ')
-
-        export CLOUDFRONT_DISTRIBUTION_ID="$(echo "${STACK_JSON}" | python3 -c '
-        import json,sys
-        items=json.load(sys.stdin)
-        print(next(x["OutputValue"] for x in items if x["OutputKey"]=="CloudFrontDistributionId"))
-        ')
+        CLOUDFRONT_DISTRIBUTION_ID="$(aws cloudformation describe-stacks \
+          --stack-name "${RUNTIME_STACK_NAME}" \
+          --query "Stacks[0].Outputs[?OutputKey=='CloudFrontDistributionId'].OutputValue | [0]" \
+          --output text)"
 
         test -n "${WEBSITE_BUCKET}"
         test -n "${CLOUDFRONT_DISTRIBUTION_ID}"
@@ -33,18 +29,27 @@ phases:
         echo "Website bucket: ${WEBSITE_BUCKET}"
         echo "CloudFront distribution: ${CLOUDFRONT_DISTRIBUTION_ID}"
 
+        printf 'WEBSITE_BUCKET=%s\n' "${WEBSITE_BUCKET}" > /tmp/deployment.env
+        printf 'CLOUDFRONT_DISTRIBUTION_ID=%s\n' "${CLOUDFRONT_DISTRIBUTION_ID}" >> /tmp/deployment.env
+
   build:
     commands:
-      - echo "Deploying immutable Angular assets..."
+      - echo "Loading deployment variables..."
+      - . /tmp/deployment.env
       - echo "Deploying Angular application to S3..."
       - test -f index.html
       - |
+        set -eu
+
         aws s3 sync . "s3://${WEBSITE_BUCKET}" \
           --delete \
+          --exclude "deployspec.yml" \
           --cache-control "public,max-age=31536000,immutable"
 
       - echo "Uploading index.html with no-cache headers..."
       - |
+        set -eu
+
         aws s3 cp "s3://${WEBSITE_BUCKET}/index.html" \
           "s3://${WEBSITE_BUCKET}/index.html" \
           --metadata-directive REPLACE \
@@ -53,6 +58,8 @@ phases:
 
       - echo "Invalidating CloudFront..."
       - |
+        set -eu
+
         INVALIDATION_ID="$(aws cloudfront create-invalidation \
           --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
           --paths '/*' \
