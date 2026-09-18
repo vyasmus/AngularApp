@@ -88,6 +88,25 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
+  CachingOptimizedPolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: !Sub '${ApplicationName}-${EnvironmentName}-CachingOptimized'
+        Comment: Optimized caching policy for the SPA entry point.
+        DefaultTTL: 86400
+        MinTTL: 1
+        MaxTTL: 31536000
+        ParametersInCacheKeyAndForwardedToOrigin:
+          EnableAcceptEncodingBrotli: true
+          EnableAcceptEncodingGzip: true
+          CookiesConfig:
+            CookieBehavior: none
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+
   StaticAssetCachePolicy:
     Type: AWS::CloudFront::CachePolicy
     Properties:
@@ -129,7 +148,7 @@ Resources:
           Compress: true
           AllowedMethods: [GET, HEAD, OPTIONS]
           CachedMethods: [GET, HEAD, OPTIONS]
-          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f
+          CachePolicyId: !Ref CachingOptimizedPolicy
         CacheBehaviors:
           - PathPattern: '*.js'
             TargetOriginId: S3Origin
