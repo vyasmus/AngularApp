@@ -20,7 +20,7 @@ Parameters:
     Type: String
     Default: ${ApplicationName}-${EnvironmentName}-${AWS::Region}-${AWS::AccountId}
     Description: Globally unique, lowercase S3 bucket name for the PROD website.
-    AllowedPattern: '^[A-Za-z]+-[A-Z]+-[a-z0-9-]+-[0-9]{12}$'
+    AllowedPattern: '^([A-Za-z]+(-[A-Za-z]+)+)-[0-9]+-[A-Za-z0-9]+'
 
   CloudFrontPriceClass:
     Type: String
