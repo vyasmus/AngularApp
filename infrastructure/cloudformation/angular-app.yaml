@@ -18,7 +18,7 @@ Parameters:
 
   BucketName:
     Type: String
-    Default: ${ApplicationName}-${EnvironmentName}-${AWS::Region}-${AWS::AccountId}
+    Default: ${AWS::AccountName}-${ApplicationName}-${EnvironmentName}-${AWS::Region}-${AWS::AccountId}
     Description: Globally unique, lowercase S3 bucket name for the PROD website.
     AllowedPattern: '^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$'
 
