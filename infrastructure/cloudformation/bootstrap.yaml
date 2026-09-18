@@ -13,8 +13,8 @@ Parameters:
 
   EnvironmentName:
     Type: String
-    Default: PROD
-    AllowedValues: [PROD]
+    Default: prod
+    AllowedValues: [prod]
 
   GitHubConnectionArn:
     Type: String
@@ -42,7 +42,7 @@ Parameters:
 
   WebsiteBucketName:
     Type: String
-    #Default: ${AWS::AccountName}-${ApplicationName}-${EnvironmentName}-${AWS::Region}-${AWS::AccountId}
+    #Default: ${AWS::AccountName}-${ApplicationName}-${AWS::Region}-${AWS::AccountId}
     Description: Globally unique lowercase S3 bucket name for the PROD website. CloudFormation does not support dynamic parameter defaults, so provide this value when creating the bootstrap stack.
     AllowedPattern: '^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$'
     ConstraintDescription: Must be a lowercase S3 bucket name using letters, numbers, periods, and hyphens.
