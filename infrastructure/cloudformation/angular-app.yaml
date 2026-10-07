@@ -64,6 +64,9 @@ Resources:
         RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
       LifecycleConfiguration:
         Rules:
           - Id: ExpireNonCurrentVersions
@@ -139,9 +142,8 @@ Resources:
         Origins:
           - Id: S3Origin
             DomainName: !GetAtt WebsiteBucket.RegionalDomainName
-            S3OriginConfig:
-              OriginAccessIdentity: ''
             OriginAccessControlId: !GetAtt CloudFrontOAC.Id
+            S3OriginConfig: {}
         DefaultCacheBehavior:
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
@@ -203,7 +205,7 @@ Resources:
             Resource: !Sub '${WebsiteBucket.Arn}/*'
             Condition:
               StringEquals:
-                aws:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistributionId}
+                aws:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
           - Sid: DenyInsecureTransport
             Effect: Deny
             Principal: '*'
