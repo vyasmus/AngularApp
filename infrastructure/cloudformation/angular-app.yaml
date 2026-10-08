@@ -90,7 +90,7 @@ Resources:
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
-
+		OriginAccessControlOriginType: "s3"
   CachingOptimizedPolicy:
     Type: AWS::CloudFront::CachePolicy
     Properties:
