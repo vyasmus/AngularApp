@@ -80,7 +80,6 @@ Resources:
           Value: !Ref EnvironmentName
         - Key: ManagedBy
           Value: CloudFormation
-
   CloudFrontOAC:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
@@ -90,7 +89,6 @@ Resources:
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
-		OriginAccessControlOriginType: "s3"
   CachingOptimizedPolicy:
     Type: AWS::CloudFront::CachePolicy
     Properties:
